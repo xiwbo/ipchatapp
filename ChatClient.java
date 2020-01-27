@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
-import java.net.Inet4Address;
 
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
@@ -30,7 +29,7 @@ public class ChatClient {
 	String serverAddress;
 	Scanner in;
 	PrintWriter out;
-	JFrame frame = new JFrame("Chatter");
+	JFrame frame = new JFrame("Chat App");
 	JTextField textField = new JTextField(50);
 	JTextArea messageArea = new JTextArea(16, 50);
 
@@ -49,6 +48,7 @@ public class ChatClient {
 		frame.getContentPane().add(textField, BorderLayout.SOUTH);
 		frame.getContentPane().add(new JScrollPane(messageArea), BorderLayout.CENTER);
 		frame.pack();
+		frame.setLocationRelativeTo(null);
 
 		// Send on enter then clear to prepare for next message
 		textField.addActionListener(new ActionListener() {
@@ -62,8 +62,8 @@ public class ChatClient {
 	private String getName() {
 		return JOptionPane.showInputDialog(
 			frame,
-			"Choose a screen name:",
-			"Screen name selection",
+			"Please enter your user name:",
+			"Title",
 			JOptionPane.PLAIN_MESSAGE
 		);
 	}
@@ -73,13 +73,12 @@ public class ChatClient {
 			var socket = new Socket(serverAddress, 59001);
 			in = new Scanner(socket.getInputStream());
 			out = new PrintWriter(socket.getOutputStream(), true);
-
 			while (in.hasNextLine()) {
 				var line = in.nextLine();
 				if (line.startsWith("SUBMITNAME")) {
 					out.println(getName());
 				} else if (line.startsWith("NAMEACCEPTED")) {
-					this.frame.setTitle("Chatter - " + line.substring(13));
+					this.frame.setTitle("Chat App - " + line.substring(13));
 					textField.setEditable(true);
 				} else if (line.startsWith("MESSAGE")) {
 					messageArea.append(line.substring(8) + "\n");
@@ -92,15 +91,12 @@ public class ChatClient {
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
-			System.err.println("Pass the server IP as the sole command line argument");
-			return;
-		}
-		
-		var client = new ChatClient(new Inet4Address.getLocalHost().getHostAddress());
+		Scanner input = new Scanner(System.in);
+		System.out.print("Enter your IP Address: ");
+		String ipaddr = input.next();
+		var client = new ChatClient(ipaddr);
 		client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		client.frame.setVisible(true);
-		client.frame.setLocationRelativeTo(null);
 		client.run();
 	}
 }

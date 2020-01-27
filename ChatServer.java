@@ -83,8 +83,10 @@ public class ChatServer
 				// to the set of all writers so this client can receive broadcast messages.
 				// But BEFORE THAT, let everyone else know that the new person has joined!
 				out.println("NAMEACCEPTED " + name);
+				System.out.println("NAMEACCEPTED " + name + " line 86");
 				for (PrintWriter writer : writers) {
 					writer.println("MESSAGE " + name + " has joined");
+					System.out.println("MESSAGE " + name + " has joined - line 89");
 				}
 				writers.add(out);
 
@@ -96,7 +98,7 @@ public class ChatServer
 					}
 					for (PrintWriter writer : writers) {
 						writer.println("MESSAGE " + name + ": " + input);
-						System.out.println(input);
+						System.out.println("MESSAGE " + name + ": " + input);
 					}
 				}
 			} catch (Exception e) {
@@ -110,6 +112,7 @@ public class ChatServer
 					names.remove(name);
 					for (PrintWriter writer : writers) {
 						writer.println("MESSAGE " + name + " has left");
+						System.out.println("MESSAGE " + name + " has left");
 					}
 				}
 				try { socket.close(); } catch (IOException e) {}
